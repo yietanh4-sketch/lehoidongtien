@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Việt Hải - Super App Giao Đồ Ăn & Gọi Xe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #FF6B6B 0%, #FF8E72 50%, #FFA552 100%);
+            --secondary-gradient: linear-gradient(135deg, #00B4A6 0%, #00D4C4 100%);
+            --accent-gradient: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+            --bg-color: #f8fafc;
+            --text-main: #1a202c;
+            --text-light: #718096;
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.12);
+            --border-color: #e2e8f0;
+            --tab-active: #FF6B6B;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Lexend', sans-serif;
+        }
+        
+        body { 
+            background: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ==================== HEADER ==================== */
+        header {
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 40px 20px 30px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+
+        header h1 { 
+            font-size: 28px;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .info-bar {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            color: var(--text-main);
+            max-width: 550px;
+            margin: 15px auto 0;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            font-size: 13px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ==================== TAB NAVIGATION ==================== */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: -25px auto 30px;
+            position: relative;
+            z-index: 10;
+            padding: 0 15px;
+            max-width: 800px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: 2px solid transparent;
+            padding: 12px 10px;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .tab-btn i { font-size: 18px; }
+
+        .tab-btn.active {
+            color: var(--tab-active);
+            border-color: var(--tab-active);
+            background: #fffafa;
+        }
+
+        .app-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .app-section.active {
+            display: block;
+        }
+
+        /* ==================== CONTAINER & LAYOUT ==================== */
+        .container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            max-width: 1200px; 
+            margin: 0 auto 50px; 
+            padding: 0 20px; 
+            gap: 30px;
+        }
+
+        /* ==================== FOOD SECTION ==================== */
+        .menu-section { 
+            flex: 1;
+            min-width: 100%;
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 15px;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item .icon { font-size: 40px; margin-bottom: 10px; display: block; }
+        .menu-item h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; flex-grow: 1; }
+        .price { 
+            background: #FFF5E6; color: #D97706; padding: 6px 12px; 
+            border-radius: 12px; font-weight: 700; display: inline-block; margin-bottom: 15px; font-size: 13px;
+        }
+
+        .btn-add {
+            background: var(--primary-gradient); color: white; border: none;
+            padding: 12px; width: 100%; border-radius: 14px; cursor: pointer;
+            font-weight: 600; font-size: 14px;
+        }
+
+        .cart-section {
+            width: 100%; background: white; border-radius: 24px; padding: 20px;
+            box-shadow: var(--shadow-md); border: 1px solid var(--border-color);
+        }
+
+        .cart-section h3 { font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-weight: 700; }
+        
+        .cart-item { 
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; padding: 12px; border-radius: 16px; background: #f8fafc; border: 1px solid var(--border-color);
+        }
+        .cart-item > div:first-child > div:first-child { font-weight: 700; font-size: 14px; }
+        .cart-item > div:first-child > div:last-child { font-size: 12px; color: #D97706; }
+
+        .qty-controls { display: flex; align-items: center; gap: 8px; background: white; padding: 4px 8px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .qty-btn { width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--border-color); background: white; cursor: pointer; font-weight: bold; }
+
+        .total-box { font-size: 20px; font-weight: 800; text-align: right; margin: 15px 0; padding: 15px 0; border-top: 2px solid var(--border-color); border-bottom: 2px solid var(--border-color); }
+        #total-price { color: #FF6B6B; }
+
+        .shipper-card { background: #f8fafc; padding: 14px; border-radius: 18px; margin-bottom: 10px; border: 2px solid var(--border-color); cursor: pointer; }
+        input[type="radio"]:checked + .shipper-card { border-color: #00B4A6; background: #E8FFFD; }
+        .shipper-info { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .contact-group { display: flex; gap: 8px; }
+        .btn-contact { flex: 1; border: none; padding: 8px; border-radius: 10px; color: white; font-weight: 600; font-size: 12px; text-decoration: none; text-align: center; }
+        .bg-call { background: #00B894; }
+        .bg-zalo { background: #0068ff; }
+
+        .order-btn { background: var(--secondary-gradient); padding: 16px !important; font-size: 16px !important; margin-top: 15px !important;}
+
+        /* ==================== RIDE HAILING SECTION ==================== */
+        .ride-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .ride-form {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .ride-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .map-link-btn {
+            display: block;
+            background: #EBF4FF;
+            color: #3182CE;
+            padding: 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #bee3f8;
+        }
+
+        .route-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        input[type="radio"]:checked + .route-card {
+            border-color: #FF6B6B;
+            background: #FFF5F5;
+        }
+
+        .route-info { flex: 1; }
+        .route-name { font-weight: 700; font-size: 14px; color: var(--text-main); margin-bottom: 4px; }
+        .route-desc { font-size: 12px; color: var(--text-light); }
+        .route-price { font-weight: 800; font-size: 16px; color: #FF6B6B; white-space: nowrap; margin-left: 10px; }
+
+        .ride-map {
+            background: #e2e8f0;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            height: 250px;
+        }
+
+        .ride-map iframe { width: 100%; height: 100%; border: none; }
+
+        .booking-summary { margin-top: 15px; padding-top: 15px; border-top: 2px dashed var(--border-color); }
+
+        /* ==================== HISTORY SECTION ==================== */
+        .history-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .history-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px; background: white; border-radius: 16px; margin-bottom: 15px;
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            border-color: var(--secondary-gradient);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .history-icon {
+            font-size: 24px; margin-right: 15px; background: #f8fafc;
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; border: 1px solid var(--border-color); flex-shrink: 0;
+        }
+
+        .history-details { flex: 1; text-align: left; overflow: hidden; }
+        .history-title { font-weight: 700; font-size: 15px; color: var(--text-main); line-height: 1.4; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .history-time { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+        
+        .history-price { 
+            font-weight: 800; color: #00B4A6; font-size: 16px; text-align: right; 
+            white-space: nowrap; margin-left: 10px; background: #E8FFFD; padding: 6px 12px; border-radius: 10px;
+        }
+
+        .empty-history { text-align: center; padding: 50px 20px; color: var(--text-light); }
+        .empty-history i { font-size: 48px; margin-bottom: 15px; opacity: 0.5; color: #cbd5e0;}
+
+        /* ==================== MODALS & TOAST ==================== */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 100;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+
+        .modal-content { 
+            background: white; padding: 25px 20px; border-radius: 24px; width: 100%; max-width: 380px;
+            text-align: center; animation: slideUp 0.3s ease;
+        }
+
+        .loader-bike { font-size: 45px; animation: moveBike 1.5s infinite linear; display: inline-block; margin: 15px 0; }
+
+        #toast {
+            visibility: hidden; min-width: 200px; background: #333; color: #fff; text-align: center;
+            border-radius: 12px; padding: 12px 20px; position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%); z-index: 1000; font-size: 14px;
+        }
+        #toast.show { visibility: visible; animation: slideUp 0.3s, fadeOut 0.3s 2.5s; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; } }
+        @keyframes moveBike { 0% { transform: translateX(-40px); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateX(40px); opacity: 0; } }
+
+        /* ==================== MOBILE RESPONSIVE TWEAKS ==================== */
+        @media (min-width: 768px) {
+            .menu-section { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+            .container { flex-wrap: nowrap; }
+            .cart-section { flex: 0 0 350px; position: sticky; top: 20px; align-self: flex-start; }
+            .ride-container { grid-template-columns: 1fr 1fr; }
+            .ride-map { height: auto; min-height: 400px; }
+        }
+
+        @media (max-width: 480px) {
+            header { padding: 30px 15px 20px; }
+            header h1 { font-size: 24px; }
+            .info-bar { flex-direction: column; gap: 5px; text-align: center; padding: 10px; }
+            .tab-btn { padding: 10px 8px; font-size: 13px; gap: 4px; }
+            .tab-btn i { font-size: 15px; }
+            .route-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .route-price { margin-left: 0; align-self: flex-start; background: #FFF5F5; padding: 4px 8px; border-radius: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌟 VIỆT HẢI APP ĐẶT NƯỚC VÀ XE ÔM LỄ HỘI ĐỘNG TIÊN</h1>
+        <div class="info-bar">
+            <span>📍Đằng sau khu đập niêu</span> • 
+            <span style="color: #ff6b6b; font-weight: 700;">🚀 Phục vụ 24/7</span>
+        </div>
+    </header>
+
+    <!-- TAB NAVIGATION -->
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab('food')" id="tab-food">
+            <i class="fa-solid fa-burger"></i> Đồ Ăn
+        </button>
+        <button class="tab-btn" onclick="switchTab('ride')" id="tab-ride">
+            <i class="fa-solid fa-motorcycle"></i> Xe Ôm
+        </button>
+        <button class="tab-btn" onclick="switchTab('history')" id="tab-history">
+            <i class="fa-solid fa-clock-rotate-left"></i> Lịch Sử
+        </button>
+    </div>
+
+    <!-- PHÂN HỆ 1: ĐẶT ĐỒ ĂN (FOOD DELIVERY) -->
+    <div id="section-food" class="app-section active">
+        <div class="container">
+            <div class="menu-section" id="menu-container"></div>
+            <div class="cart-section">
+                <h3>🛒 Giỏ hàng của bạn</h3>
+                <ul id="cart-items" style="list-style: none;">
+                    <li style="text-align: center; color: gray; padding: 20px 0;">Chưa có món nào...</li>
+                </ul>
+                <div class="total-box">Tổng: <span id="total-price">0</span>đ</div>
+                <div class="shipper-selection">
+                    <p style="font-weight: 600; margin-bottom: 10px; font-size: 14px;">🛵 Chọn shipper quen:</p>
+                    <div id="shipper-list"></div>
+                </div>
+                <button onclick="openPayment()" class="btn-add order-btn">ĐẶT ĐỒ ĂN NGAY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHÂN HỆ 2: GỌI XE ÔM (RIDE HAILING) -->
+    <div id="section-ride" class="app-section">
+        <div class="ride-container" style="padding: 0 15px;">
+            <div class="ride-form">
+                <h2 class="ride-title"><i class="fa-solid fa-route" style="color:#FF6B6B"></i> Chọn tuyến xe & Bảng giá</h2>
+                
+                <a href="https://maps.app.goo.gl/NRj7jjioPhCzyqDFA" target="_blank" class="map-link-btn">
+                    <i class="fa-solid fa-map-location-dot"></i> Mở Bản đồ điểm đón: Tiệm Việt Hải
+                </a>
+
+                <div class="vehicle-options">
+                    <p style="font-weight: 600; margin-bottom: 12px; color: var(--text-main); font-size: 14px;">📌 Các tuyến phổ biến khu vực Lễ hội</p>
+                    
+                    <label style="display: block;">
+                        <input type="radio" name="route" value="1" checked style="display:none">
+                        <div class="route-card">
+                            <div class="route-info">
+                                <div class="route-name">Bến đò Nguyên Béo ➔ Lễ hội</div>
+                                <div class="route-desc">Vé 1 chiều đi</div>
+                            </div>
+                            <div class="route-price">15.000đ/ 1 người</div>
+                        </div>
+                    </label>
+
+                    <label style="display: block;">
+                        <input type="radio" name="route" value="2" style="display:none">
+                        <div class="route-card">
+                            <div class="route-info">
+                                <div class="route-name">Lễ hội ➔ Bến đò Nguyên Béo</div>
+                                <div class="route-desc">Vé 1 chiều về</div>
+                            </div>
+                            <div class="route-price">15.000đ/ 1 người</div>
+                        </div>
+                    </label>
+
+                    <label style="display: block;">
+                        <input type="radio" name="route" value="3" style="display:none">
+                        <div class="route-card">
+                            <div class="route-info">
+                                <div class="route-name">Khứ hồi (Bến đò ⟷ Lễ hội)</div>
+                                <div class="route-desc">Vé 2 chiều (Đưa đi + Đón về)</div>
+                            </div>
+                            <div class="route-price" style="color: #D97706;">20.000đ/ 1 người</div>
+                        </div>
+                    </label>
+
+                    <label style="display: block;">
+                        <input type="radio" name="route" value="4" style="display:none">
+                        <div class="route-card">
+                            <div class="route-info">
+                                <div class="route-name">Sau đỉnh Rùa ➔ TT Lễ hội</div>
+                                <div class="route-desc">Đón tận nơi</div>
+                            </div>
+                            <div class="route-price">10.000đ/ 1 người</div>
+                        </div>
+                    </label>
+
+                    <label style="display: block;">
+                        <input type="radio" name="route" value="5" style="display:none">
+                        <div class="route-card">
+                            <div class="route-info">
+                                <div class="route-name">Điểm khác (Tự chọn)</div>
+                                <div class="route-desc">Tài xế sẽ liên hệ báo giá</div>
+                            </div>
+                            <div class="route-price" style="color: #667EEA;">Giá thỏa thuận</div>
+                        </div>
+                    </label>
+
+                    <div class="booking-summary">
+                        <button onclick="bookRide()" class="btn-add order-btn" style="background: var(--primary-gradient);">ĐẶT XE NGAY</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khung Map -->
+            <div class="ride-map">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3728.845946399088!2d106.6978419!3d20.8379201!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a71b12b553d15%3A0xc3e7f60742f9e42!2zSOG6o2kgUGjDsm5nLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1691234567890!5m2!1svi!2s" 
+                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHÂN HỆ 3: LỊCH SỬ GIAO DỊCH (HISTORY) -->
+    <div id="section-history" class="app-section">
+        <div class="history-container" id="history-list">
+            <!-- Dữ liệu lịch sử sẽ được JS render vào đây -->
+        </div>
+    </div>
+
+    <!-- MODAL THANH TOÁN ĐỒ ĂN -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color: #00B4A6; margin-bottom: 15px; font-size: 20px;">Thanh toán Đơn Hàng</h2>
+            <div style="background: #f8fafc; padding: 15px; border-radius: 15px; text-align: left; font-size: 13px;">
+                <p>🏦 Ngân hàng: <b>VPBank</b></p>
+                <p>👤 Chủ TK: <b>DO QUOC VIET</b></p>
+                <p>🔢 Số TK: <b>8888812112005</b></p>
+                <p>📝 Nội dung: <b style="color: #FF6B6B;">DONGTIEN910</b></p>
+            </div>
+            <img id="qr-img" src="" alt="Mã QR" style="width: 180px; height: 180px; margin: 15px auto; border-radius: 15px;">
+            <p>Tổng tiền: <b id="pay-amount" style="color:#D97706; font-size: 20px;">0đ</b></p>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="closeModal('payment-modal')" class="btn-add" style="background: #cbd5e0; color: #333; flex: 1; box-shadow: none;">Đóng</button>
+                <button onclick="confirmFoodOrder()" class="btn-add" style="flex: 2; background: var(--secondary-gradient);">Đã Chuyển Khoản</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TÌM TÀI XẾ (RIDE) -->
+    <div id="finding-driver-modal" class="modal-overlay">
+        <div class="modal-content" id="driver-modal-content">
+            <!-- Nội dung sẽ được render bằng JS -->
+        </div>
+    </div>
+
+    <div id="toast">Thông báo</div>
+
+    <script>
+        // ================= TAB LOGIC =================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(`section-${tab}`).classList.add('active');
+        }
+
+        // ================= DATA & HISTORY LOGIC =================
+        let historyData = JSON.parse(localStorage.getItem('vh_history')) || [];
+
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            if (historyData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-history">
+                        <i class="fa-solid fa-receipt"></i>
+                        <p>Bạn chưa có giao dịch nào.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--text-main);">
+                    <i class="fa-solid fa-clock-rotate-left" style="color:#00B4A6"></i> Lịch sử gần đây
+                </h2>
+            ` + historyData.map(h => `
+                <div class="history-item">
+                    <div class="history-icon">${h.type === 'food' ? '🍔' : '🛵'}</div>
+                    <div class="history-details">
+                        <div class="history-title">${h.title}</div>
+                        <div class="history-time"><i class="fa-regular fa-clock"></i> ${h.time}</div>
+                    </div>
+                    <div class="history-price">${h.price}</div>
+                </div>
+            `).join('');
+        }
+
+        function saveHistory(type, title, priceStr) {
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} - ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+            
+            historyData.unshift({ type, title, price: priceStr, time: timeStr });
+            
+            // Giữ lại tối đa 20 lịch sử gần nhất cho nhẹ máy
+            if(historyData.length > 20) historyData.pop(); 
+            
+            localStorage.setItem('vh_history', JSON.stringify(historyData));
+            renderHistory();
+        }
+
+        // ================= FOOD APP LOGIC =================
+        const menuData = [
+            { id: 1, name: "Nước Chanh Đá", price: 15000, icon: "🍋" },
+            { id: 2, name: "Trà Đào", price: 10000, icon: "🍑" },
+            { id: 3, name: "Hướng Dương", price: 10000, icon: "🌻" },
+            { id: 4, name: "Xúc Xích", price: 5000, icon: "🌭" },
+            { id: 5, name: "Mía Hấp", price: 10000, icon: "🎋" },
+            { id: 6, name: "Nước Mía", price: 10000, icon: "🥤" }
+        ];
+
+        const shippers = [
+            { name: "Việt Anh", phone: "0777893730", zalo: "0777893730", avatar: "🛵" },
+            { name: "Tuấn Hải", phone: "0336998622", zalo: "0336998622", avatar: "🚲" }
+        ];
+
+        let cart = [];
+
+        function renderMenu() {
+            const html = menuData.map(item => `
+                <div class="menu-item">
+                    <span class="icon">${item.icon}</span>
+                    <h4>${item.name}</h4>
+                    <div class="price">${item.price.toLocaleString()}đ</div>
+                    <button class="btn-add" onclick="addToCart(${item.id})">Thêm</button>
+                </div>
+            `).join('');
+            document.getElementById('menu-container').innerHTML = html;
+        }
+
+        function renderShippers() {
+            const html = shippers.map((s, index) => `
+                <label style="cursor:pointer; display:block;">
+                    <input type="radio" name="ship" id="s${index}" ${index===0?'checked':''} style="display:none">
+                    <div class="shipper-card">
+                        <div class="shipper-info">
+                            <span style="font-size: 24px;">${s.avatar}</span>
+                            <b>${s.name}</b>
+                        </div>
+                        <div class="contact-group">
+                            <a href="tel:${s.phone}" class="btn-contact bg-call">📞 Gọi</a>
+                            <a href="https://zalo.me/${s.zalo}" target="_blank" class="btn-contact bg-zalo">💬 Zalo</a>
+                        </div>
+                    </div>
+                </label>
+            `).join('');
+            document.getElementById('shipper-list').innerHTML = html;
+        }
+
+        function addToCart(id) {
+            const item = cart.find(i => i.id === id);
+            if (item) item.quantity++;
+            else cart.push({ ...menuData.find(m => m.id === id), quantity: 1 });
+            updateCart();
+            showToast("✨ Đã thêm món!");
+        }
+
+        function changeQty(id, delta) {
+            const index = cart.findIndex(i => i.id === id);
+            if (index !== -1) {
+                cart[index].quantity += delta;
+                if (cart[index].quantity <= 0) cart.splice(index, 1);
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const container = document.getElementById('cart-items');
+            const totalEl = document.getElementById('total-price');
+            if (cart.length === 0) {
+                container.innerHTML = '<li style="text-align: center; color: gray; padding: 20px 0;">Chưa có món nào...</li>';
+                totalEl.innerText = '0';
+                return;
+            }
+            let total = 0;
+            container.innerHTML = cart.map(item => {
+                total += item.price * item.quantity;
+                return `
+                <li class="cart-item">
+                    <div>
+                        <div>${item.name}</div>
+                        <div>${(item.price*item.quantity).toLocaleString()}đ</div>
+                    </div>
+                    <div class="qty-controls">
+                        <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+                        <b>${item.quantity}</b>
+                        <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                    </div>
+                </li>`;
+            }).join('');
+            totalEl.innerText = total.toLocaleString();
+        }
+
+        function openPayment() {
+            if (cart.length === 0) return alert("Bạn chưa chọn món nào mà!");
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('pay-amount').innerText = total.toLocaleString() + 'đ';
+            const qrUrl = `https://img.vietqr.io/image/vpbank-8888812112005-compact.png?amount=${total}&addInfo=DONGTIEN910&accountName=DO QUOC VIET`;
+            document.getElementById('qr-img').src = qrUrl;
+            document.getElementById('payment-modal').style.display = 'flex';
+        }
+
+        function confirmFoodOrder() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            // Lưu lịch sử
+            saveHistory('food', `Đặt ${totalItems} món Đồ Ăn/Nước`, total.toLocaleString() + 'đ');
+            
+            // Reset giỏ hàng
+            cart = [];
+            updateCart();
+            closeModal('payment-modal');
+            
+            // Chuyển qua tab lịch sử để khách xem
+            showToast("🎉 Đặt hàng thành công! Đã lưu lịch sử.");
+            switchTab('history');
+        }
+
+        // ================= RIDE APP LOGIC =================
+        let lastAssignedDriver = ""; // Biến lưu tài xế chuyến trước để ép đổi người
+
+        function bookRide() {
+            const modal = document.getElementById('finding-driver-modal');
+            const modalContent = document.getElementById('driver-modal-content');
+            modal.style.display = 'flex';
+            
+            // Lấy thông tin chuyến đi hiện tại đang chọn
+            const selectedRadio = document.querySelector('input[name="route"]:checked');
+            const routeCard = selectedRadio.nextElementSibling;
+            const routeName = routeCard.querySelector('.route-name').innerText;
+            const routePrice = routeCard.querySelector('.route-price').innerText;
+
+            // Render Giao diện Đang Tìm Kiếm
+            modalContent.innerHTML = `
+                <h2 style="color: #FF6B6B; margin-bottom: 10px; font-size: 20px;">Đang tìm tài xế...</h2>
+                <p style="color: var(--text-light); font-size: 13px;">Hệ thống đang điều phối tài xế gần nhất đến đón bạn.</p>
+                <div class="loader-bike">🛵</div>
+                <p id="search-status" style="font-weight: bold;">Đang quét bán kính 2km...</p>
+                <button onclick="closeModal('finding-driver-modal')" class="btn-add" style="margin-top: 20px; background: #cbd5e0; color: #333; padding: 10px; box-shadow: none;">Hủy tìm kiếm</button>
+            `;
+
+            const statuses = ["Đang liên hệ bác tài gần nhất...", "Tài xế đang chốt đơn...", "Đang kết nối..."];
+            let i = 0;
+            const statusEl = document.getElementById('search-status');
+            
+            const interval = setInterval(() => {
+                i++;
+                if(i < statuses.length) {
+                    if (statusEl) statusEl.innerText = statuses[i];
+                } else {
+                    clearInterval(interval);
+                    
+                    // Logic chọn ngẫu nhiên tài xế
+                    const drivers = [
+                        { name: "Lò Đức Hùng", vehicle: "Honda Wave", star: "5.0" },
+                        { name: "Đỗ Đức Tài", vehicle: "Yamaha Sirius", star: "4.9" },
+                        { name: "Nguyễn Tuấn Hải", vehicle: "Honda RSX", star: "5.0" }
+                    ];
+                    
+                    let randomDriver;
+                    do {
+                        randomDriver = drivers[Math.floor(Math.random() * drivers.length)];
+                    } while (randomDriver.name === lastAssignedDriver);
+                    
+                    lastAssignedDriver = randomDriver.name;
+                    
+                    // Lưu chuyến đi vào lịch sử
+                    saveHistory('ride', `Gọi xe: ${routeName}`, routePrice);
+
+                    // Render Giao diện Đã tìm thấy tài xế
+                    modalContent.innerHTML = `
+                        <div style="font-size: 50px; margin-bottom: 5px;">👨‍✈️</div>
+                        <h2 style="color: #00B4A6; margin-bottom: 5px; font-size: 20px;">Đã tìm thấy tài xế!</h2>
+                        <p style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 5px;">${randomDriver.name}</p>
+                        <p style="color: var(--text-light); font-size: 13px; margin-bottom: 20px;">
+                            <i class="fa-solid fa-star" style="color: #FFA552;"></i> ${randomDriver.star} • ${randomDriver.vehicle}
+                        </p>
+                        
+                        <a href="tel:0777893730" class="btn-add order-btn" style="background: linear-gradient(135deg, #00D4A8 0%, #00B894 100%); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; box-sizing: border-box; width: 100%; margin-top: 0 !important; font-size: 15px !important;">
+                            <i class="fa-solid fa-phone-volume fa-shake"></i> GỌI NGAY CHO TÔI NHÉ
+                        </a>
+                        
+                        <button onclick="closeModal('finding-driver-modal'); showToast('Cuốc xe đã được lưu vào Lịch Sử!');" class="btn-add" style="margin-top: 15px; background: transparent; border: 1px solid #cbd5e0; color: var(--text-light); box-shadow: none;">Đóng</button>
+                    `;
+                }
+            }, 1200);
+        }
+
+        // ================= UTILS =================
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.className = "show";
+            setTimeout(() => t.className = "", 2500);
+        }
+
+        // Khởi tạo
+        renderMenu();
+        renderShippers();
+        renderHistory(); // Chạy hàm render lịch sử ngay lúc load trang
+    </script>
+</body>
+</html>
